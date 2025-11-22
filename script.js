@@ -125,7 +125,12 @@ function setupEventListeners() {
     if (downloadBtn) {
         downloadBtn.addEventListener('click', function() {
             console.log('Download button clicked');
-            downloadImage('jpeg');
+            // First ensure the canvas is generated
+            generateHandwrittenNotes();
+            // Then download after a short delay to ensure canvas is ready
+            setTimeout(() => {
+                downloadImage('jpeg');
+            }, 100);
         });
         console.log('Download button listener attached');
     } else {
@@ -285,10 +290,32 @@ function downloadImage(format) {
     
     if (!canvas) {
         console.error('Canvas not available for download');
+        alert('Canvas not available. Please try generating the image first.');
         return;
     }
     
     try {
+        // Check if canvas has content
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+        let hasContent = false;
+        
+        // Check if any pixel is not the background color
+        for (let i = 0; i < data.length; i += 4) {
+            // Skip alpha channel (i+3)
+            if (data[i] !== 255 || data[i+1] !== 255 || data[i+2] !== 255) {
+                hasContent = true;
+                break;
+            }
+        }
+        
+        if (!hasContent) {
+            console.error('Canvas appears to be empty');
+            alert('The canvas appears to be empty. Please try generating the image first.');
+            return;
+        }
+        
+        // Create download link
         const link = document.createElement('a');
         const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
         
@@ -300,12 +327,15 @@ function downloadImage(format) {
             link.href = canvas.toDataURL('image/jpeg', 0.9);
         }
         
-        console.log('Triggering download');
+        // Trigger download
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        
         console.log('Download completed');
+        alert('Image downloaded successfully!');
     } catch (error) {
         console.error('Error during download:', error);
+        alert('Error downloading image. Please try again.');
     }
-            }
+                               }
