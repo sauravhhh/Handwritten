@@ -5,117 +5,168 @@ let selectedPaperStyle = 'plain';
 
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded');
     generateHandwrittenNotes();
     setupEventListeners();
 });
 
 function setupEventListeners() {
+    console.log('Setting up event listeners');
+    
     // Text input
-    document.getElementById('textInput').addEventListener('input', generateHandwrittenNotes);
+    const textInput = document.getElementById('textInput');
+    if (textInput) {
+        textInput.addEventListener('input', generateHandwrittenNotes);
+        console.log('Text input listener attached');
+    }
     
     // Font style
-    document.getElementById('fontStyle').addEventListener('change', function() {
-        updateFontPreview();
-        generateHandwrittenNotes();
-    });
+    const fontStyle = document.getElementById('fontStyle');
+    if (fontStyle) {
+        fontStyle.addEventListener('change', function() {
+            updateFontPreview();
+            generateHandwrittenNotes();
+        });
+        console.log('Font style listener attached');
+    }
     
     // Font size
-    document.getElementById('fontSize').addEventListener('input', function(e) {
-        document.getElementById('fontSizeValue').textContent = e.target.value + 'px';
-        generateHandwrittenNotes();
-    });
+    const fontSize = document.getElementById('fontSize');
+    if (fontSize) {
+        fontSize.addEventListener('input', function(e) {
+            document.getElementById('fontSizeValue').textContent = e.target.value + 'px';
+            generateHandwrittenNotes();
+        });
+        console.log('Font size listener attached');
+    }
     
     // Line height
-    document.getElementById('lineHeight').addEventListener('input', function(e) {
-        document.getElementById('lineHeightValue').textContent = e.target.value;
-        generateHandwrittenNotes();
-    });
+    const lineHeight = document.getElementById('lineHeight');
+    if (lineHeight) {
+        lineHeight.addEventListener('input', function(e) {
+            document.getElementById('lineHeightValue').textContent = e.target.value;
+            generateHandwrittenNotes();
+        });
+        console.log('Line height listener attached');
+    }
     
     // Colors
-    document.getElementById('penColor').addEventListener('change', generateHandwrittenNotes);
-    document.getElementById('bgColor').addEventListener('change', generateHandwrittenNotes);
+    const penColor = document.getElementById('penColor');
+    if (penColor) {
+        penColor.addEventListener('change', generateHandwrittenNotes);
+        console.log('Pen color listener attached');
+    }
+    
+    const bgColor = document.getElementById('bgColor');
+    if (bgColor) {
+        bgColor.addEventListener('change', generateHandwrittenNotes);
+        console.log('Background color listener attached');
+    }
     
     // Paper style buttons
-    document.querySelectorAll('.paper-style-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            document.querySelectorAll('.paper-style-btn').forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            selectedPaperStyle = this.dataset.style;
-            generateHandwrittenNotes();
+    const paperStyleBtns = document.querySelectorAll('.paper-style-btn');
+    if (paperStyleBtns) {
+        paperStyleBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                paperStyleBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                selectedPaperStyle = this.dataset.style;
+                generateHandwrittenNotes();
+            });
         });
-    });
+        console.log('Paper style listeners attached');
+    }
     
     // Image size
-    document.getElementById('imageSize').addEventListener('change', function(e) {
-        const customInputs = document.getElementById('customSizeInputs');
-        if (e.target.value === 'custom') {
-            customInputs.classList.remove('hidden');
-        } else {
-            customInputs.classList.add('hidden');
-            const [width, height] = e.target.value.split('x');
-            canvas.width = parseInt(width);
-            canvas.height = parseInt(height);
-            generateHandwrittenNotes();
-        }
-    });
+    const imageSize = document.getElementById('imageSize');
+    if (imageSize) {
+        imageSize.addEventListener('change', function(e) {
+            const customInputs = document.getElementById('customSizeInputs');
+            if (e.target.value === 'custom') {
+                customInputs.classList.remove('hidden');
+            } else {
+                customInputs.classList.add('hidden');
+                const [width, height] = e.target.value.split('x');
+                canvas.width = parseInt(width);
+                canvas.height = parseInt(height);
+                generateHandwrittenNotes();
+            }
+        });
+        console.log('Image size listener attached');
+    }
     
     // Custom size inputs
-    document.getElementById('customWidth').addEventListener('input', updateCustomSize);
-    document.getElementById('customHeight').addEventListener('input', updateCustomSize);
+    const customWidth = document.getElementById('customWidth');
+    if (customWidth) {
+        customWidth.addEventListener('input', updateCustomSize);
+        console.log('Custom width listener attached');
+    }
+    
+    const customHeight = document.getElementById('customHeight');
+    if (customHeight) {
+        customHeight.addEventListener('input', updateCustomSize);
+        console.log('Custom height listener attached');
+    }
     
     // Generate button
-    document.getElementById('generateBtn').addEventListener('click', generateHandwrittenNotes);
-    
-    // Download button and dropdown
-    const downloadBtn = document.getElementById('downloadBtn');
-    const downloadMenu = document.getElementById('downloadMenu');
-    const downloadDropdown = document.getElementById('downloadDropdown');
-    
-    downloadBtn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        downloadMenu.classList.toggle('show');
-        downloadDropdown.classList.toggle('active');
-    });
-    
-    // Download options
-    document.querySelectorAll('.dropdown-item').forEach(item => {
-        item.addEventListener('click', function(e) {
-            e.stopPropagation();
-            const format = this.dataset.format;
-            downloadImage(format);
-            downloadMenu.classList.remove('show');
-            downloadDropdown.classList.remove('active');
+    const generateBtn = document.getElementById('generateBtn');
+    if (generateBtn) {
+        generateBtn.addEventListener('click', function() {
+            console.log('Generate button clicked');
+            generateHandwrittenNotes();
         });
-    });
+        console.log('Generate button listener attached');
+    } else {
+        console.error('Generate button not found');
+    }
     
-    // Close dropdown when clicking outside
-    document.addEventListener('click', function() {
-        downloadMenu.classList.remove('show');
-        downloadDropdown.classList.remove('active');
-    });
+    // Download button
+    const downloadBtn = document.getElementById('downloadBtn');
+    if (downloadBtn) {
+        downloadBtn.addEventListener('click', function() {
+            console.log('Download button clicked');
+            downloadImage('jpeg');
+        });
+        console.log('Download button listener attached');
+    } else {
+        console.error('Download button not found');
+    }
 }
 
 function updateFontPreview() {
     const fontStyle = document.getElementById('fontStyle').value;
     const preview = document.getElementById('fontPreview');
-    preview.className = `font-preview font-${fontStyle.toLowerCase().replace(' ', '').replace('-', '')}`;
+    if (preview) {
+        preview.className = `font-preview font-${fontStyle.toLowerCase().replace(' ', '').replace('-', '')}`;
+    }
 }
 
 function updateCustomSize() {
     const width = parseInt(document.getElementById('customWidth').value);
     const height = parseInt(document.getElementById('customHeight').value);
-    canvas.width = width;
-    canvas.height = height;
-    generateHandwrittenNotes();
+    if (canvas) {
+        canvas.width = width;
+        canvas.height = height;
+        generateHandwrittenNotes();
+    }
 }
 
 function generateHandwrittenNotes() {
+    console.log('Generating handwritten notes');
+    
+    if (!canvas || !ctx) {
+        console.error('Canvas or context not available');
+        return;
+    }
+    
     const text = document.getElementById('textInput').value;
     const fontStyle = document.getElementById('fontStyle').value;
     const fontSize = parseInt(document.getElementById('fontSize').value);
     const lineHeight = parseFloat(document.getElementById('lineHeight').value);
     const penColor = document.getElementById('penColor').value;
     const bgColor = document.getElementById('bgColor').value;
+    
+    console.log('Parameters:', { text, fontStyle, fontSize, lineHeight, penColor, bgColor });
     
     // Clear canvas
     ctx.fillStyle = bgColor;
@@ -168,6 +219,8 @@ function generateHandwrittenNotes() {
             y += lineHeightPx;
         }
     });
+    
+    console.log('Handwritten notes generated');
 }
 
 function drawTextWithVariation(text, x, y, fontSize, fontFamily, color) {
@@ -228,16 +281,31 @@ function drawPaperStyle() {
 }
 
 function downloadImage(format) {
-    const link = document.createElement('a');
-    const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+    console.log('Downloading image as', format);
     
-    if (format === 'png') {
-        link.download = `handwritten-notes-${timestamp}.png`;
-        link.href = canvas.toDataURL('image/png');
-    } else {
-        link.download = `handwritten-notes-${timestamp}.jpg`;
-        link.href = canvas.toDataURL('image/jpeg', 0.9);
+    if (!canvas) {
+        console.error('Canvas not available for download');
+        return;
     }
     
-    link.click();
-              }
+    try {
+        const link = document.createElement('a');
+        const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+        
+        if (format === 'png') {
+            link.download = `handwritten-notes-${timestamp}.png`;
+            link.href = canvas.toDataURL('image/png');
+        } else {
+            link.download = `handwritten-notes-${timestamp}.jpg`;
+            link.href = canvas.toDataURL('image/jpeg', 0.9);
+        }
+        
+        console.log('Triggering download');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        console.log('Download completed');
+    } catch (error) {
+        console.error('Error during download:', error);
+    }
+            }
